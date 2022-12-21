@@ -38,11 +38,7 @@ pub unsafe fn on_timer_fired(user_data: *const c_void) {
     let chip = &mut *(user_data as *mut Chip);
 
     if chip.current_row == 0 {
-        debugPrint(
-            CString::new("First row!")
-                .unwrap()
-                .into_raw(),
-        );
+        debugPrint(CString::new("First row!").unwrap().into_raw());
     }
 
     draw_line(chip, chip.current_row, DEEP_GREEN);
@@ -64,9 +60,9 @@ pub unsafe extern "C" fn chipInit() {
     let frame_buffer = framebufferInit(&mut width, &mut height);
 
     let chip = Chip {
-        frame_buffer: frame_buffer,
-        width: width,
-        height: height,
+        frame_buffer,
+        width,
+        height,
         current_row: 0,
     };
 
