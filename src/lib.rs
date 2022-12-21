@@ -23,6 +23,10 @@ struct Chip {
     current_row: u32,
 }
 
+// chipInit() will be called once per chip instance. We use CHIP_VEC to keep track of all the
+// instances, and use the user_data pointer to index into CHIP_VEC.
+static mut CHIP_VEC: Vec<Chip> = Vec::new();
+
 fn draw_line(chip: &Chip, row: u32, color: u32) {
     let color_bytes_ptr = &color as *const u32 as *const u8;
 
@@ -35,7 +39,7 @@ fn draw_line(chip: &Chip, row: u32, color: u32) {
 }
 
 pub unsafe fn on_timer_fired(user_data: *const c_void) {
-    let chip = &mut *(user_data as *mut Chip);
+    let mut chip = &mut CHIP_VEC[user_data as usize];
 
     if chip.current_row == 0 {
         debugPrint(CString::new("First row!").unwrap().into_raw());
@@ -65,9 +69,10 @@ pub unsafe extern "C" fn chipInit() {
         height,
         current_row: 0,
     };
+    CHIP_VEC.push(chip);
 
     let timer_config = TimerConfig {
-        user_data: &chip as *const _ as *const c_void,
+        user_data: (CHIP_VEC.len() - 1) as *const c_void,
         callback: on_timer_fired as *const c_void,
     };
 
