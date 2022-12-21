@@ -23,6 +23,10 @@ struct Chip {
     current_row: u32,
 }
 
+// We store all the chips in this global vector, to ensure they are kept in memory
+// even after the chipInit() function returns.
+static mut CHIP_VEC: Vec<Chip> = Vec::new();
+
 fn draw_line(chip: &Chip, row: u32, color: u32) {
     let color_bytes_ptr = &color as *const u32 as *const u8;
 
@@ -65,9 +69,11 @@ pub unsafe extern "C" fn chipInit() {
         height,
         current_row: 0,
     };
+    CHIP_VEC.push(chip);
+    let chip_ptr = CHIP_VEC.last_mut().unwrap() as *mut _ as *mut c_void;
 
     let timer_config = TimerConfig {
-        user_data: &chip as *const _ as *const c_void,
+        user_data: chip_ptr,
         callback: on_timer_fired as *const c_void,
     };
 
