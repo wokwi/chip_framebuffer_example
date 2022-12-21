@@ -1,0 +1,61 @@
+name: Build Chip
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    name: Build chip
+    steps:
+      - name: Setup | Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          default: true
+          target: wasm32-unknown-unknown
+          components: clippy, rustfmt
+          toolchain: stable
+      - name: Check out repository
+        uses: actions/checkout@v3
+      - name: Build | Fmt Check
+        run: cargo fmt -- --check
+      - name: Build | Clippy
+        run: cargo clippy --no-deps
+      - name: Build | Compile
+        run: cargo build --release
+      - name: Build | Copy dist files
+        run: |
+          mkdir -p dist
+          cp target/wasm32-unknown-unknown/release/chip_*.wasm dist/chip.wasm
+          cp wokwi-chip.json dist/chip.json
+      - name: 'Upload Artifacts'
+        uses: actions/upload-artifact@v3
+        with:
+          name: chip
+          path: dist/*
+
+  # The release job only runs when you push a tag starting with "v", e.g. v1.0.0 
+  release:
+    name: Release
+    needs: build
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download compiled chip
+        uses: actions/download-artifact@v3
+        with:
+          name: chip
+          path: chip
+      - name: Create chip.version.txt file
+        run: echo "$ZIP_VERSION" > chip/chip.version.txt
+        env:
+          ZIP_VERSION: ${{ github.ref_name }}
+      - name: Create a zip archive
+        run: cd chip && zip -9 ../chip.zip chip.*
+      - name: Upload release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: chip.zip
+          token: ${{ secrets.GITHUB_TOKEN }}
+          generateReleaseNotes: true
