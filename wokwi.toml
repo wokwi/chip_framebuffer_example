@@ -1,0 +1,7 @@
+[wokwi]
+elf = "test/blank.elf"
+firmware = "test/blank.hex"
+
+[[chip]]
+name = 'framebuffer-example'
+binary = 'target/wasm32-unknown-unknown/release/chip_framebuffer_example.wasm'

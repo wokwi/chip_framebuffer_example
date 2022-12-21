@@ -1,0 +1,21 @@
+{
+  "name": "Framebuffer Chip",
+  "author": "Uri Shaked",
+  "license": "MIT",
+  "pins": [
+    "",
+    "",
+    "",
+    "VCC",
+    "GND",
+    "",
+    "",
+    "",
+    "",
+    ""
+  ],
+  "display": {
+    "width": 128,
+    "height": 128
+  }
+}

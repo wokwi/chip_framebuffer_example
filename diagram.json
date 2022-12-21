@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "author": "Uri Shaked",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "chip-framebuffer-example", "id": "chip1", "top": -85.38, "left": 168, "attrs": {} },
+    { "type": "wokwi-gnd", "id": "gnd1", "top": -28.8, "left": 133.8, "attrs": {} },
+    { "type": "wokwi-vcc", "id": "vcc1", "top": -85.64, "left": 144, "attrs": {} }
+  ],
+  "connections": [ [ "gnd1:GND", "chip1:GND", "black", [ "v0" ] ], [ "chip1:VCC", "vcc1:VCC", "red", [ "h0" ] ] ],
+  "dependencies": {}
+}
